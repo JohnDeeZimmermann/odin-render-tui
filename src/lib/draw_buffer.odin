@@ -20,12 +20,16 @@ buffer_draw_screen :: proc(buffer: Buffer, app: App) -> (ok: bool = true) {
 				return false
 			}
 			buffer_cell := buffer.content[cell_idx]
+			fg_color := _tbx_color_apply_style(
+				_tbx_color_from_color(buffer_cell.style.fg_color),
+				buffer_cell.style,
+			)
 			status := tbx.set_cell(
 				i32(x),
 				i32(y),
 				buffer_cell.rune,
-				tbx.Color(tbx.NormalColor.Default),
-				tbx.Color(tbx.NormalColor.Default),
+				fg_color,
+				_tbx_color_from_color(buffer_cell.style.bg_color),
 			)
 			if status != tbx.Status.Ok {
 				fmt.eprintfln(

@@ -6,6 +6,27 @@ _tbx_color_modify :: proc(color: tbx.Color, color_modify: tbx.ColorModifier) -> 
 	return tbx.Color(u64(color) | u64(color_modify))
 }
 
+_tbx_color_apply_style :: proc(color: tbx.Color, font_style: FontStyle) -> tbx.Color {
+	color := color
+	if (font_style.bold) {
+		color = _tbx_color_modify(color, tbx.ColorModifier.Bold)
+	}
+	if (font_style.italic) {
+		color = _tbx_color_modify(color, tbx.ColorModifier.Italic)
+	}
+	if (font_style.strikeout) {
+		color = _tbx_color_modify(color, tbx.ColorModifier.Strikeout)
+	}
+	if (font_style.underline) {
+		color = _tbx_color_modify(color, tbx.ColorModifier.Underline)
+	}
+	if (font_style.reverse) {
+		color = _tbx_color_modify(color, tbx.ColorModifier.Reverse)
+	}
+
+	return color
+}
+
 _tbx_color_from_color :: proc(color: Color) -> tbx.Color {
 	switch c in color {
 	case AnsiColor:
@@ -19,6 +40,7 @@ _tbx_color_from_color :: proc(color: Color) -> tbx.Color {
 	assert(false, "Unreachable")
 	return tbx.Color(0)
 }
+
 
 _tbx_color_from_rgb :: proc(color: RGB) -> tbx.Color {
 	// Colors must be in the form 0xRRGGBB (so 8 bit per color)
