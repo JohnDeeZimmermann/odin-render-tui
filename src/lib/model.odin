@@ -1,8 +1,13 @@
 package ort
 
-Style :: struct {}
+CellStyle :: struct {
+	fg_color: Color,
+	bg_color: Color,
+	bold:     bool,
+	italic:   bool,
+}
 
 Cell :: struct {
 	rune:  rune,
-	style: Style,
+	style: CellStyle,
 }

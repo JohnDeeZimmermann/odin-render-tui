@@ -1,12 +1,13 @@
 package ort
 
 Position :: struct {
-	x: int,
-	y: int,
+	x: u16,
+	y: u16,
 }
+
 Dimensions :: struct {
-	width:  int,
-	height: int,
+	width:  u16,
+	height: u16,
 }
 
 Area :: struct {
@@ -16,5 +17,5 @@ Area :: struct {
 
 Buffer :: struct {
 	area:    Area,
-	content: Cell,
+	content: [dynamic]Cell,
 }

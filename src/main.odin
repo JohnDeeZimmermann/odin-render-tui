@@ -1,4 +1,10 @@
 package main
-import "lib"
+import "core:fmt"
+import vmem "core:mem/virtual"
+import ort "lib"
 
-main :: proc() {}
+main :: proc() {
+	arena: vmem.Arena
+	app := ort.app_create(&arena).?
+	defer ort.app_destroy(app)
+}
