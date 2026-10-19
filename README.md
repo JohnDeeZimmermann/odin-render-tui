@@ -1,5 +1,8 @@
-# Odin Render TUI
-Odin terminal layouting library for TUI applications.
+# Odin Render TUI (ORT)
+Odin terminal layout library for TUI applications. 
+
+> [!warning]
+> Work in progress. Basically nothing works as of now.
 
 ## Dependecies
 
