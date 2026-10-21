@@ -1,5 +1,22 @@
 package ort
 
+Edges :: struct {
+	top:    u16,
+	left:   u16,
+	right:  u16,
+	bottom: u16,
+}
+
+Alignment :: enum {
+	BEGIN,
+	CENTER,
+	END,
+}
+
+Padding :: struct {
+	using edges: Edges,
+}
+
 FontStyle :: struct {
 	bold:      bool,
 	italic:    bool,
