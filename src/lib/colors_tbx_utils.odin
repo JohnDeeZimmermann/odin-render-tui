@@ -28,6 +28,10 @@ _tbx_color_apply_style :: proc(color: tbx.Color, font_style: FontStyle) -> tbx.C
 }
 
 _tbx_color_from_color :: proc(color: Color) -> tbx.Color {
+	if color == nil {
+		return _tbx_color_from_ansi_color(.Reset)
+	}
+
 	switch c in color {
 	case AnsiColor:
 		return _tbx_color_from_ansi_color(c)

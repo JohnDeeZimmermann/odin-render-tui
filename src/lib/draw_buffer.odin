@@ -1,10 +1,17 @@
 package ort
 
 import "core:fmt"
+import "core:strings"
 import tbx "shared:odin-termbox2"
 
 // Draws the buffer to the screen, as is.
 buffer_draw_screen :: proc(buffer: Buffer, app: App) -> (ok: bool = true) {
+	if status_clear := tbx.clear(); status_clear != .Ok {
+		fmt.eprintfln("Error trying to clear screen: %d", status_clear)
+		return false
+	}
+	defer tbx.present()
+
 	area := buffer.area
 	for y in 0 ..< area.height {
 		for x in 0 ..< area.width {
@@ -19,7 +26,12 @@ buffer_draw_screen :: proc(buffer: Buffer, app: App) -> (ok: bool = true) {
 				)
 				return false
 			}
+
 			buffer_cell := buffer.content[cell_idx]
+			if (strings.is_null(buffer_cell.rune)) {
+				continue
+			}
+
 			fg_color := _tbx_color_apply_style(
 				_tbx_color_from_color(buffer_cell.style.fg_color),
 				buffer_cell.style,

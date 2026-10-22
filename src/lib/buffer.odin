@@ -1,6 +1,7 @@
 package ort
 
 import "core:fmt"
+import tbx "shared:odin-termbox2"
 
 Position :: struct {
 	x: u16,
@@ -30,3 +31,14 @@ buffer_get_cell_idx :: proc(buffer: Buffer, x: u16, y: u16) -> int {
 	return int(y * area.width + x)
 }
 
+create_screen_buffer :: proc() -> Buffer {
+	return Buffer{area = {height = u16(tbx.height()), width = u16(tbx.height())}}
+}
+
+buffer_initialize_contents :: proc(buffer: ^Buffer) -> (ok: bool) {
+	clear(&buffer.content)
+	if resize(&buffer.content, buffer.area.width * buffer.area.height) != nil {
+		return false
+	}
+	return true
+}
