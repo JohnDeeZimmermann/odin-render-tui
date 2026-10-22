@@ -18,11 +18,13 @@ main :: proc() {
 	// )
 
 	paragraph := ort.ParagraphWidget {
-		text = "Test Text",
+		text = "Das ist ein wirklich ganz ganz ganz toller Test Text! Wahnisnn, was da alles geht!",
 		style = {
 			bg_color = ort.AnsiColor.White,
 			fg_color = ort.AnsiColor.Black,
-			padding = {top = 5, left = 5},
+			padding = {top = 5, left = 20, bottom = 10},
+			vertical_alignment = .END,
+			horizontal_alignment = .CENTER,
 		},
 	}
 	if !ort.paragraph_widget_render(paragraph, &buffer) {

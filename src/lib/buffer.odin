@@ -32,7 +32,7 @@ buffer_get_cell_idx :: proc(buffer: Buffer, x: u16, y: u16) -> int {
 }
 
 create_screen_buffer :: proc() -> Buffer {
-	return Buffer{area = {height = u16(tbx.height()), width = u16(tbx.height())}}
+	return Buffer{area = {height = u16(tbx.height()), width = u16(tbx.width())}}
 }
 
 buffer_initialize_contents :: proc(buffer: ^Buffer) -> (ok: bool) {

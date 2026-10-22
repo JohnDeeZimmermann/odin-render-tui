@@ -33,14 +33,19 @@ paragraph_widget_render :: proc(widget: ParagraphWidget, buffer: ^Buffer) -> (ok
 	usable_height := area.height - padding.bottom - padding.top
 
 	// Bonus padding only necessary for vertical align
-	bonus_padding := _paragraph_widget_calc_extra_padding(widget, buffer^, runes, usable_height)
+	extra_padding := _paragraph_widget_calc_extra_height_padding(
+		widget,
+		buffer^,
+		runes,
+		usable_height,
+	)
 
-	for y in (padding.top + bonus_padding) ..< area.height - padding.bottom {
+	for y in (padding.top + extra_padding) ..< area.height - padding.bottom {
 		y := y
 
 		// Invert if vertical end align
 		if (v_align == .END) {
-			y = padding.top + bonus_padding + usable_height - y - 1
+			y = (area.height - padding.bottom) - (y - padding.top + extra_padding)
 		}
 
 		new_rune_idx, should_continue := _paragraph_widget_render_row(widget, buffer, runes, y, i)
@@ -55,7 +60,7 @@ paragraph_widget_render :: proc(widget: ParagraphWidget, buffer: ^Buffer) -> (ok
 }
 
 // Calculates the center row of the buffer
-_paragraph_widget_calc_extra_padding :: proc(
+_paragraph_widget_calc_extra_height_padding :: proc(
 	widget: ParagraphWidget,
 	buffer: Buffer,
 	runes: []rune,
@@ -97,9 +102,24 @@ _paragraph_widget_render_row :: proc(
 	padding := widget.style.padding
 	area := buffer.area
 
-	for x in padding.left ..< area.width - padding.right {
+	usable_width := area.width - padding.left - padding.right
+	extra_padding := _paragraph_widget_calc_extra_width_padding(
+		widget,
+		buffer^,
+		runes,
+		usable_width,
+		i,
+	)
+
+	for x in padding.left + extra_padding ..< area.width - padding.right {
+		x := x
+
 		if i >= len(runes) {
 			return i, false
+		}
+
+		if (widget.style.horizontal_alignment == .END) {
+			x = (area.width - padding.right) - (x - padding.left + extra_padding)
 		}
 
 		cell_idx := buffer_get_cell_idx(buffer^, x, y)
@@ -113,4 +133,32 @@ _paragraph_widget_render_row :: proc(
 	}
 
 	return i, true
+}
+
+
+_paragraph_widget_calc_extra_width_padding :: proc(
+	widget: ParagraphWidget,
+	buffer: Buffer,
+	runes: []rune,
+	usable_width: u16,
+	rune_idx: int,
+) -> u16 {
+	if (widget.style.horizontal_alignment == .BEGIN) {
+		return 0
+	}
+
+	rune_count := len(runes)
+	remaining_runes := u16(rune_count - rune_idx)
+	if (remaining_runes > usable_width) {
+		return 0
+	}
+
+	if (widget.style.horizontal_alignment == .CENTER) {
+		return (usable_width - remaining_runes) / 2
+	}
+	if (widget.style.horizontal_alignment == .END) {
+		return usable_width - remaining_runes
+	}
+
+	return 0
 }
