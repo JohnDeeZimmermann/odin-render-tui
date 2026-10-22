@@ -20,11 +20,11 @@ main :: proc() {
 	paragraph := ort.ParagraphWidget {
 		text = "Das ist ein wirklich ganz ganz ganz toller Test Text! Wahnisnn, was da alles geht!",
 		style = {
-			bg_color = ort.AnsiColor.White,
+			bg_color = ort.AnsiColor.LightGreen,
 			fg_color = ort.AnsiColor.Black,
-			padding = {top = 5, left = 20, bottom = 10},
+			padding = {top = 5, left = 30, bottom = 5, right = 30},
 			vertical_alignment = .END,
-			horizontal_alignment = .CENTER,
+			horizontal_alignment = .END,
 		},
 	}
 	if !ort.paragraph_widget_render(paragraph, &buffer) {

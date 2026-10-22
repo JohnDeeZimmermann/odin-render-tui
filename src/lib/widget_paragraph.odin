@@ -41,13 +41,6 @@ paragraph_widget_render :: proc(widget: ParagraphWidget, buffer: ^Buffer) -> (ok
 	)
 
 	for y in (padding.top + extra_padding) ..< area.height - padding.bottom {
-		y := y
-
-		// Invert if vertical end align
-		if (v_align == .END) {
-			y = (area.height - padding.bottom) - (y - padding.top + extra_padding)
-		}
-
 		new_rune_idx, should_continue := _paragraph_widget_render_row(widget, buffer, runes, y, i)
 		i = new_rune_idx
 		if (!should_continue) {
@@ -59,14 +52,13 @@ paragraph_widget_render :: proc(widget: ParagraphWidget, buffer: ^Buffer) -> (ok
 	return true
 }
 
-// Calculates the center row of the buffer
 _paragraph_widget_calc_extra_height_padding :: proc(
 	widget: ParagraphWidget,
 	buffer: Buffer,
 	runes: []rune,
 	usable_height: u16,
 ) -> u16 {
-	if (widget.style.vertical_alignment != .CENTER) {
+	if (widget.style.vertical_alignment == .BEGIN) {
 		return 0
 	}
 
@@ -85,7 +77,11 @@ _paragraph_widget_calc_extra_height_padding :: proc(
 		return 0
 	}
 
-	return used_height / 2
+	if (widget.style.vertical_alignment == .CENTER) {
+		return used_height / 2 - 1
+	}
+
+	return used_height - 1
 }
 
 _paragraph_widget_render_row :: proc(
@@ -116,10 +112,6 @@ _paragraph_widget_render_row :: proc(
 
 		if i >= len(runes) {
 			return i, false
-		}
-
-		if (widget.style.horizontal_alignment == .END) {
-			x = (area.width - padding.right) - (x - padding.left + extra_padding)
 		}
 
 		cell_idx := buffer_get_cell_idx(buffer^, x, y)
