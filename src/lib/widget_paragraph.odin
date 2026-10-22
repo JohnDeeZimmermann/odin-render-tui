@@ -15,7 +15,13 @@ ParagraphWidget :: struct {
 	text:  string,
 }
 
-paragraph_widget_render :: proc(widget: ParagraphWidget, buffer: ^Buffer) -> (ok: bool) {
+paragraph_widget_render :: proc(
+	widget: ParagraphWidget,
+	buffer: ^Buffer,
+	allocator := context.allocator,
+) -> (
+	ok: bool,
+) {
 	area := buffer.area
 	padding := widget.style.padding
 	v_align := widget.style.vertical_alignment
@@ -29,7 +35,7 @@ paragraph_widget_render :: proc(widget: ParagraphWidget, buffer: ^Buffer) -> (ok
 	}
 
 	i := 0
-	runes := utf8.string_to_runes(widget.text)
+	runes := utf8.string_to_runes(widget.text, allocator)
 	usable_height := area.height - padding.bottom - padding.top
 
 	// Bonus padding only necessary for vertical align
