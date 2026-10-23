@@ -1,6 +1,7 @@
 package main
 import "core:fmt"
 import vmem "core:mem/virtual"
+import "core:time"
 import ort "lib"
 
 main :: proc() {
@@ -8,14 +9,11 @@ main :: proc() {
 	app := ort.app_create(&arena).?
 	defer ort.app_destroy(app)
 
-	buffer := ort.create_screen_buffer()
-	ort.buffer_initialize_contents(&buffer)
-
-	// fmt.printfln(
-	// 	"Initialized buffer with width %d and height %d",
-	// 	buffer.area.width,
-	// 	buffer.area.height,
-	// )
+	buffer, ok := ort.create_screen_buffer(app)
+	if !ok {
+		fmt.eprintfln("Failed to create buffer")
+		return
+	}
 
 	paragraph := ort.ParagraphWidget {
 		text = "Das ist ein wirklich ganz ganz ganz toller Test Text! Wahnisnn, was da alles geht!",
@@ -34,5 +32,6 @@ main :: proc() {
 		fmt.eprintfln("Error trying to draw buffer to screen")
 	}
 
-	ort.app_wait(&app)
+	ort.events_set_mouse_enabled(true)
+	ort.peek_event(time.Second * 5) // Any input or waiting 5 seconds will quite the app
 }

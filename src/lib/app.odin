@@ -24,8 +24,3 @@ app_destroy :: proc(app: App) {
 	free_all(app.allocator)
 	tbx.shutdown()
 }
-
-app_wait :: proc(app: ^App) {
-	ev := tbx.Event{}
-	tbx.poll_event(&ev)
-}

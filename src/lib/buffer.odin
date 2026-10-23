@@ -36,11 +36,20 @@ buffer_get_cell :: proc(buffer: Buffer, x: u16, y: u16) -> Cell {
 	return buffer.content[idx]
 }
 
-create_screen_buffer :: proc() -> Buffer {
-	return Buffer{area = {height = u16(tbx.height()), width = u16(tbx.width())}}
+create_screen_buffer :: proc(app: App) -> (buffer: Buffer, ok: bool) {
+	allocator := app.allocator
+
+	buffer = Buffer {
+		area = {height = u16(tbx.height()), width = u16(tbx.width())},
+	}
+	if !buffer_reset(&buffer, allocator) {
+		return buffer, false
+	}
+
+	return buffer, true
 }
 
-buffer_initialize_contents :: proc(buffer: ^Buffer, allocator := context.allocator) -> (ok: bool) {
+buffer_reset :: proc(buffer: ^Buffer, allocator := context.allocator) -> (ok: bool) {
 	size := buffer.area.width * buffer.area.height
 
 	if (buffer.content == nil) {

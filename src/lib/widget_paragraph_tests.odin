@@ -8,7 +8,7 @@ fresh_buffer :: proc() -> Buffer {
 	buffer := Buffer {
 		area = {height = 10, width = 10},
 	}
-	buffer_initialize_contents(&buffer, context.temp_allocator)
+	buffer_reset(&buffer, context.temp_allocator)
 	return buffer
 }
 
