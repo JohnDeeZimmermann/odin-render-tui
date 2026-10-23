@@ -23,7 +23,7 @@ test_paragraph_widget_render_simple :: proc(t: ^testing.T) {
 		text = text,
 	}
 
-	paragraph_widget_render(widget, &buffer, context.temp_allocator)
+	paragraph_widget_render(widget, &buffer, buffer.area, context.temp_allocator)
 
 	testing.expect_value(t, buffer.content[0].rune, runes[0])
 	testing.expect_value(t, buffer.content[2].rune, runes[2])
@@ -44,7 +44,7 @@ test_paragraph_widget_render_padding :: proc(t: ^testing.T) {
 		style = {padding = {top = 2, left = 2}},
 	}
 
-	paragraph_widget_render(widget, &buffer, context.temp_allocator)
+	paragraph_widget_render(widget, &buffer, buffer.area, context.temp_allocator)
 
 	testing.expect_value(t, buffer_get_cell(buffer, 2, 2).rune, 'H')
 	testing.expect_value(t, buffer_get_cell(buffer, 4, 2).rune, 'l')
@@ -64,7 +64,7 @@ test_paragraph_widget_render_word_wrap :: proc(t: ^testing.T) {
 		style = {padding = {top = 2, left = 8}},
 	}
 
-	paragraph_widget_render(widget, &buffer, context.temp_allocator)
+	paragraph_widget_render(widget, &buffer, buffer.area, context.temp_allocator)
 
 	testing.expect_value(t, buffer_get_cell(buffer, 8, 2).rune, 'H')
 	testing.expect_value(t, buffer_get_cell(buffer, 8, 3).rune, 'l')
@@ -86,7 +86,7 @@ test_paragraph_widget_render_v_align_end :: proc(t: ^testing.T) {
 		style = {padding = {top = 2, left = 2, bottom = 2}, vertical_alignment = .END},
 	}
 
-	paragraph_widget_render(widget, &buffer, context.temp_allocator)
+	paragraph_widget_render(widget, &buffer, buffer.area, context.temp_allocator)
 
 	testing.expect_value(t, buffer_get_cell(buffer, 2, 6).rune, 'H')
 	testing.expect_value(t, buffer_get_cell(buffer, 3, 7).rune, 'l')
@@ -106,7 +106,7 @@ test_paragraph_widget_render_v_align_center :: proc(t: ^testing.T) {
 		style = {padding = {top = 3, left = 2, bottom = 2}, vertical_alignment = .CENTER},
 	}
 
-	paragraph_widget_render(widget, &buffer, context.temp_allocator)
+	paragraph_widget_render(widget, &buffer, buffer.area, context.temp_allocator)
 
 	testing.expect_value(t, buffer_get_cell(buffer, 2, 4).rune, 'H')
 	testing.expect_value(t, buffer_get_cell(buffer, 3, 5).rune, 'l')
@@ -130,7 +130,7 @@ test_paragraph_widget_render_h_align_end :: proc(t: ^testing.T) {
 		},
 	}
 
-	paragraph_widget_render(widget, &buffer, context.temp_allocator)
+	paragraph_widget_render(widget, &buffer, buffer.area, context.temp_allocator)
 
 	testing.expect_value(t, buffer_get_cell(buffer, 2, 4).rune, 'H')
 	testing.expect_value(t, buffer_get_cell(buffer, 7, 5).rune, 'l')
@@ -155,7 +155,7 @@ test_paragraph_widget_render_h_align_center :: proc(t: ^testing.T) {
 		},
 	}
 
-	paragraph_widget_render(widget, &buffer, context.temp_allocator)
+	paragraph_widget_render(widget, &buffer, buffer.area, context.temp_allocator)
 
 	testing.expect_value(t, buffer_get_cell(buffer, 2, 4).rune, 'H')
 	testing.expect_value(t, buffer_get_cell(buffer, 5, 5).rune, 'l')
@@ -183,7 +183,7 @@ test_paragraph_widget_render_colors_applied :: proc(t: ^testing.T) {
 		},
 	}
 
-	paragraph_widget_render(widget, &buffer, context.temp_allocator)
+	paragraph_widget_render(widget, &buffer, buffer.area, context.temp_allocator)
 
 	testing.expect_value(t, buffer_get_cell(buffer, 2, 4).rune, 'H')
 	testing.expect_value(t, buffer_get_cell(buffer, 5, 5).rune, 'l')

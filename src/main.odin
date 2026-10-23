@@ -25,7 +25,7 @@ main :: proc() {
 			horizontal_alignment = .END,
 		},
 	}
-	if !ort.paragraph_widget_render(paragraph, &buffer) {
+	if !ort.paragraph_widget_render(paragraph, &buffer, buffer.area) {
 		fmt.eprintfln("Error trying to render widget")
 	}
 	if !ort.buffer_draw_screen(buffer, app) {

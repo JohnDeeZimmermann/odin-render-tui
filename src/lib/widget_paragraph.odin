@@ -18,11 +18,11 @@ ParagraphWidget :: struct {
 paragraph_widget_render :: proc(
 	widget: ParagraphWidget,
 	buffer: ^Buffer,
+	area: Area,
 	allocator := context.allocator,
 ) -> (
 	ok: bool,
 ) {
-	area := buffer.area
 	padding := widget.style.padding
 	v_align := widget.style.vertical_alignment
 
@@ -42,12 +42,20 @@ paragraph_widget_render :: proc(
 	extra_padding := _paragraph_widget_calc_extra_height_padding(
 		widget,
 		buffer^,
+		area,
 		runes,
 		usable_height,
 	)
 
 	for y in (padding.top + extra_padding) ..< area.height - padding.bottom {
-		new_rune_idx, should_continue := _paragraph_widget_render_row(widget, buffer, runes, y, i)
+		new_rune_idx, should_continue := _paragraph_widget_render_row(
+			widget,
+			buffer,
+			area,
+			runes,
+			y,
+			i,
+		)
 		i = new_rune_idx
 		if (!should_continue) {
 			break
@@ -61,6 +69,7 @@ paragraph_widget_render :: proc(
 _paragraph_widget_calc_extra_height_padding :: proc(
 	widget: ParagraphWidget,
 	buffer: Buffer,
+	area: Area,
 	runes: []rune,
 	usable_height: u16,
 ) -> u16 {
@@ -69,7 +78,7 @@ _paragraph_widget_calc_extra_height_padding :: proc(
 	}
 
 	padding := widget.style.padding
-	possible_runes_per_row := buffer.area.width - padding.right - padding.left
+	possible_runes_per_row := area.width - padding.right - padding.left
 	if (possible_runes_per_row == 0) {
 		return 0
 	}
@@ -93,6 +102,7 @@ _paragraph_widget_calc_extra_height_padding :: proc(
 _paragraph_widget_render_row :: proc(
 	widget: ParagraphWidget,
 	buffer: ^Buffer,
+	area: Area,
 	runes: []rune,
 	y: u16,
 	rune_idx: int,
@@ -102,7 +112,6 @@ _paragraph_widget_render_row :: proc(
 ) {
 	i := rune_idx
 	padding := widget.style.padding
-	area := buffer.area
 
 	usable_width := area.width - padding.left - padding.right
 	extra_padding := _paragraph_widget_calc_extra_width_padding(
