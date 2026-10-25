@@ -58,3 +58,28 @@ buffer_draw_screen :: proc(buffer: Buffer, app: App) -> (ok: bool = true) {
 
 	return true
 }
+
+// Draws buffer source onto buffer target
+buffer_draw_to_buffer :: proc(source: Buffer, target: ^Buffer) {
+	src_area := source.area
+	target_area := target.area
+
+	for sy in 0 ..< src_area.height {
+		ty := src_area.y + sy
+		if ty >= target_area.height {
+			break
+		}
+
+		for sx in 0 ..< src_area.width {
+			tx := src_area.x + sx
+			if tx >= target_area.width {
+				break
+			}
+
+			source_cell := buffer_get_cell(source, sx, sy)
+			cell_idx := buffer_get_cell_idx(target^, tx, ty)
+
+			target.content[cell_idx] = source_cell
+		}
+	}
+}

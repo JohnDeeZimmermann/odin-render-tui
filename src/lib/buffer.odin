@@ -23,6 +23,11 @@ Buffer :: struct {
 	content: [dynamic]Cell,
 }
 
+area_from :: proc(width: u16, height: u16) -> Area {
+	return Area{width = width, height = height}
+
+}
+
 buffer_get_cell_idx :: proc(buffer: Buffer, x: u16, y: u16) -> int {
 	area := buffer.area
 
@@ -36,11 +41,17 @@ buffer_get_cell :: proc(buffer: Buffer, x: u16, y: u16) -> Cell {
 	return buffer.content[idx]
 }
 
-create_screen_buffer :: proc(app: App) -> (buffer: Buffer, ok: bool) {
-	allocator := app.allocator
+create_screen_buffer :: proc(allocator := context.allocator) -> (buffer: Buffer, ok: bool) {
+	area := Area {
+		width  = u16(tbx.width()),
+		height = u16(tbx.height()),
+	}
+	return create_buffer(area, allocator)
+}
 
+create_buffer :: proc(area: Area, allocator := context.allocator) -> (buffer: Buffer, ok: bool) {
 	buffer = Buffer {
-		area = {height = u16(tbx.height()), width = u16(tbx.width())},
+		area = area,
 	}
 	if !buffer_reset(&buffer, allocator) {
 		return buffer, false

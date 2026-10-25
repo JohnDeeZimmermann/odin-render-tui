@@ -9,7 +9,7 @@ main :: proc() {
 	app := ort.app_create(&arena).?
 	defer ort.app_destroy(app)
 
-	buffer, ok := ort.create_screen_buffer(app)
+	buffer, ok := ort.create_screen_buffer(app.allocator)
 	if !ok {
 		fmt.eprintfln("Failed to create buffer")
 		return
