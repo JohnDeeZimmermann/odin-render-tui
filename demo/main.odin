@@ -1,8 +1,8 @@
 package main
+import ort "../lib"
 import "core:fmt"
 import vmem "core:mem/virtual"
 import "core:time"
-import ort "lib"
 
 main :: proc() {
 	arena: vmem.Arena
