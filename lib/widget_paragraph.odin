@@ -1,5 +1,7 @@
 package ort
 
+import "core:fmt"
+import "core:math"
 import "core:strings"
 import "core:unicode/utf8"
 
@@ -13,6 +15,57 @@ ParagraphStyle :: struct {
 ParagraphWidget :: struct {
 	style: ParagraphStyle,
 	text:  string,
+}
+
+paragraph_widget_required_area :: proc(
+	widget: ParagraphWidget,
+	area: Area,
+	allocator := context.allocator,
+) -> (
+	required_area: Area,
+	ok: bool,
+) {
+
+	runes, err_runes := utf8.string_to_runes(widget.text, allocator)
+	if (err_runes != nil) {
+		fmt.eprintfln("Failed to allocate runes")
+		return {}, false
+	}
+	rune_count := u16(len(runes))
+	padding := widget.style.padding
+
+	// Height
+
+	usable_height := math.max(0, area.height - padding.bottom - padding.top)
+	extra_top_padding := _paragraph_widget_calc_extra_height_padding(
+		widget,
+		area,
+		runes,
+		usable_height,
+	)
+	start_y := padding.top + extra_top_padding + area.y
+	possible_runes_per_row := area.width - padding.right - padding.left
+
+	needed_rows := (rune_count / possible_runes_per_row)
+	used_height := math.min(usable_height, needed_rows)
+	end_y := start_y + used_height
+
+	required_height := end_y - start_y + 1
+
+	// Width
+
+	usable_width := math.max(0, area.width - padding.left - padding.right)
+	extra_width_padding := _paragraph_widget_calc_extra_width_padding(
+		widget,
+		runes,
+		usable_width,
+		0,
+	)
+
+	start_x := padding.left + extra_width_padding + area.x
+	required_width := u16(math.min(rune_count, possible_runes_per_row))
+
+	return Area{x = start_x, width = required_width, y = start_y, height = required_height}, true
 }
 
 paragraph_widget_render :: proc(
@@ -36,12 +89,15 @@ paragraph_widget_render :: proc(
 
 	i := 0
 	runes := utf8.string_to_runes(widget.text, allocator)
-	usable_height := area.height - padding.bottom - padding.top
+	usable_height := math.max(0, area.height - padding.bottom - padding.top)
+	if usable_height == 0 {
+		fmt.printfln("Not enough vertical space to draw paragraph widget")
+		return false
+	}
 
 	// Bonus padding only necessary for vertical align
 	extra_padding := _paragraph_widget_calc_extra_height_padding(
 		widget,
-		buffer^,
 		area,
 		runes,
 		usable_height,
@@ -68,7 +124,6 @@ paragraph_widget_render :: proc(
 
 _paragraph_widget_calc_extra_height_padding :: proc(
 	widget: ParagraphWidget,
-	buffer: Buffer,
 	area: Area,
 	runes: []rune,
 	usable_height: u16,
@@ -113,14 +168,12 @@ _paragraph_widget_render_row :: proc(
 	i := rune_idx
 	padding := widget.style.padding
 
-	usable_width := area.width - padding.left - padding.right
-	extra_padding := _paragraph_widget_calc_extra_width_padding(
-		widget,
-		buffer^,
-		runes,
-		usable_width,
-		i,
-	)
+	usable_width := math.max(0, area.width - padding.left - padding.right)
+	if usable_width == 0 {
+		fmt.printfln("Not enough horizontal space to draw paragraph widget")
+		return i, false
+	}
+	extra_padding := _paragraph_widget_calc_extra_width_padding(widget, runes, usable_width, i)
 
 	for x in padding.left + extra_padding ..< area.width - padding.right {
 		x := x
@@ -145,7 +198,6 @@ _paragraph_widget_render_row :: proc(
 
 _paragraph_widget_calc_extra_width_padding :: proc(
 	widget: ParagraphWidget,
-	buffer: Buffer,
 	runes: []rune,
 	usable_width: u16,
 	rune_idx: int,

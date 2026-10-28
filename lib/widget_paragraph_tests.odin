@@ -1,5 +1,6 @@
 package ort
 
+import "core:fmt"
 import "core:testing"
 import "core:unicode/utf8"
 
@@ -192,6 +193,54 @@ test_paragraph_widget_render_colors_applied :: proc(t: ^testing.T) {
 	testing.expect_value(t, buffer_get_cell(buffer, 5, 5).style.bg_color, AnsiColor.White)
 	testing.expect_value(t, buffer_get_cell(buffer, 6, 5).style.bold, true)
 	testing.expect_value(t, buffer_get_cell(buffer, 6, 5).style.italic, false)
+
+	free_all(context.temp_allocator)
+}
+
+@(test)
+test_paragraph_widget_size_simple :: proc(t: ^testing.T) {
+	text := "Hello World"
+	runes := utf8.string_to_runes(text, context.temp_allocator)
+
+	buffer := fresh_buffer()
+
+	widget := ParagraphWidget {
+		text = text,
+	}
+
+	area, ok_area := paragraph_widget_required_area(widget, buffer.area, context.temp_allocator)
+	testing.expect(t, ok_area, "Area must be ok")
+
+	testing.expect_value(t, area.width, 10)
+	testing.expect_value(t, area.height, 2)
+
+	free_all(context.temp_allocator)
+}
+
+
+@(test)
+test_paragraph_widget_size_centered_padding :: proc(t: ^testing.T) {
+	text := "Hello World"
+	runes := utf8.string_to_runes(text, context.temp_allocator)
+
+	buffer := fresh_buffer()
+
+	widget := ParagraphWidget {
+		text = text,
+		style = {
+			padding = {left = 3, right = 3},
+			horizontal_alignment = .CENTER,
+			vertical_alignment = .CENTER,
+		},
+	}
+
+	area, ok_area := paragraph_widget_required_area(widget, buffer.area, context.temp_allocator)
+	testing.expect(t, ok_area, "Area must be ok")
+
+	testing.expect_value(t, area.width, 4)
+	testing.expect_value(t, area.height, 3)
+	testing.expect_value(t, area.x, 3)
+	testing.expect_value(t, area.y, 3)
 
 	free_all(context.temp_allocator)
 }
