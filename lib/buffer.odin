@@ -25,8 +25,9 @@ Buffer :: struct {
 
 area_from :: proc(width: u16, height: u16) -> Area {
 	return Area{width = width, height = height}
-
 }
+
+area_subtract_in_direction :: proc(base: Area, other: Area, direction: Direction) -> Area {}
 
 buffer_get_cell_idx :: proc(buffer: Buffer, x: u16, y: u16) -> int {
 	area := buffer.area

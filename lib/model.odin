@@ -13,6 +13,11 @@ Alignment :: enum {
 	END,
 }
 
+Direction :: enum {
+	VERTICAL,
+	HORIZONTAL,
+}
+
 Padding :: struct {
 	using edges: Edges,
 }
