@@ -13,8 +13,9 @@ ParagraphStyle :: struct {
 }
 
 ParagraphWidget :: struct {
-	style: ParagraphStyle,
-	text:  string,
+	style:             ParagraphStyle,
+	widget_dimensions: WidgetDimensions,
+	text:              string,
 }
 
 paragraph_widget_required_area :: proc(
@@ -25,6 +26,8 @@ paragraph_widget_required_area :: proc(
 	required_area: Area,
 	ok: bool,
 ) {
+	bounds := wd_get_bounds(widget.widget_dimensions, area)
+	area := wd_usable_area(widget.widget_dimensions, area)
 
 	runes, err_runes := utf8.string_to_runes(widget.text, allocator)
 	if (err_runes != nil) {
@@ -50,7 +53,7 @@ paragraph_widget_required_area :: proc(
 	used_height := math.min(usable_height, needed_rows)
 	end_y := start_y + used_height
 
-	required_height := end_y - start_y + 1
+	required_height := max(end_y - start_y + 1, bounds.min_h)
 
 	// Width
 
@@ -63,7 +66,7 @@ paragraph_widget_required_area :: proc(
 	)
 
 	start_x := padding.left + extra_width_padding + area.x
-	required_width := u16(math.min(rune_count, possible_runes_per_row))
+	required_width := math.max(u16(math.min(rune_count, possible_runes_per_row)), bounds.min_w)
 
 	return Area{x = start_x, width = required_width, y = start_y, height = required_height}, true
 }
@@ -78,6 +81,7 @@ paragraph_widget_render :: proc(
 ) {
 	padding := widget.style.padding
 	v_align := widget.style.vertical_alignment
+	area := wd_usable_area(widget.widget_dimensions, area)
 
 	if (padding.left + padding.right >= area.width) {
 		return false // Nothing to display

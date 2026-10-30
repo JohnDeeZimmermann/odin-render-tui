@@ -1,9 +1,16 @@
 package ort
 
+import "core:math"
+ContainerWidgetStyle :: struct {
+	layout_direction: Direction,
+	bg_color:         Maybe(Color),
+	padding:          Padding,
+}
+
 ContainerWidget :: struct {
-	padding:        Padding,
-	children:       []Widget,
-	grow_direction: Direction,
+	style:             ContainerWidgetStyle,
+	children:          []Widget,
+	widget_dimensions: WidgetDimensions,
 }
 
 container_widget_render :: proc(
@@ -14,6 +21,12 @@ container_widget_render :: proc(
 ) -> (
 	ok: bool,
 ) {
+
+	// First fill buffer with background color
+	if bg_color, ok_bg_color := widget.style.bg_color.?; ok_bg_color {
+		buffer_fill_background_color(buffer, area, bg_color)
+	}
+
 	for child in widget.children {
 		render_ok := widget_render_any(child, area, buffer, allocator)
 		if (!render_ok) {

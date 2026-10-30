@@ -28,9 +28,6 @@ buffer_draw_screen :: proc(buffer: Buffer, app: App) -> (ok: bool = true) {
 			}
 
 			buffer_cell := buffer.content[cell_idx]
-			if (strings.is_null(buffer_cell.rune)) {
-				continue
-			}
 
 			fg_color := _tbx_color_apply_style(
 				_tbx_color_from_color(buffer_cell.style.fg_color),
